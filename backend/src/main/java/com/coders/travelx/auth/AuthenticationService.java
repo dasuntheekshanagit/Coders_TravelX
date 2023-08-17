@@ -88,7 +88,12 @@ public class AuthenticationService {
 
     }
 
-    public AuthenticationResponse getTokensAfterRegistrationVerification(User user){
+    public AuthenticationResponse getTokensAfterRegistrationVerification(String code){
+
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(code);
+
+        User user = verificationCode.getUser();
+
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(user, jwtToken);
@@ -170,4 +175,8 @@ public class AuthenticationService {
         }
     }
 
+    public void saveVerificationCodeForUser(String code, User user) {
+        VerificationCode verificationCode = new VerificationCode(user,code);
+        verificationCodeRepository.save(verificationCode);
+    }
 }

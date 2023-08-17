@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,14 +42,18 @@ public class AuthenticationController {
     }
 
     @GetMapping("/verifyRegistration")
-    public String verifyRegistration(@RequestParam("code") String code) {
+    public ResponseEntity<?> verifyRegistration(@RequestParam("code") String code) {
         String result = service.validateVerificationCode(code);
-        if(result.equalsIgnoreCase("valid")) {
-            return "User Verified Successfully";
+
+        if (result.equalsIgnoreCase("valid")) {
+            // Call your authentication service to obtain AuthenticationResponse
+            AuthenticationResponse authResponse = service.getTokensAfterRegistrationVerification(code);
+            return ResponseEntity.ok(authResponse);
         } else if (result.equalsIgnoreCase("expired")) {
-            return "Verification link has expired";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Verification link has expired");
         }
-        return "Invalid User";
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid User");
     }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(

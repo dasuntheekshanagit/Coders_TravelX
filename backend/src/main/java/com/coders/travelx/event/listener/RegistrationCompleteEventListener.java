@@ -17,6 +17,8 @@ public class RegistrationCompleteEventListener implements
 
    private final AuthenticationService authenticationService;
 
+
+
     private final MailService mailService;
 
     public RegistrationCompleteEventListener(AuthenticationService authenticationService, MailService mailService) {
@@ -29,7 +31,7 @@ public class RegistrationCompleteEventListener implements
         //Create the Verification Token for the User with Link
         User user = event.getUser();
         String code = UUID.randomUUID().toString();
-//        userService.saveVerificationTokenForUser(code,user);
+        authenticationService.saveVerificationCodeForUser(code,user);
         //Send Mail to user
         String url =
                 event.getApplicationUrl()

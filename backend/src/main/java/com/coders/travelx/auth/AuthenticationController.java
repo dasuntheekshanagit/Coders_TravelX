@@ -7,10 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -41,6 +38,17 @@ public class AuthenticationController {
 
         publisher.publishEvent(new RegistrationCompleteEvent(user,applicationUrl(webRequest)));
         return "Email Sent";
+    }
+
+    @GetMapping("/verifyRegistration")
+    public String verifyRegistration(@RequestParam("code") String code) {
+        String result = service.validateVerificationCode(code);
+        if(result.equalsIgnoreCase("valid")) {
+            return "User Verified Successfully";
+        } else if (result.equalsIgnoreCase("expired")) {
+            return "Verification link has expired";
+        }
+        return "Invalid User";
     }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(

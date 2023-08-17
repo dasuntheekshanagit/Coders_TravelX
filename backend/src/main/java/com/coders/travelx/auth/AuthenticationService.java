@@ -56,6 +56,12 @@ public class AuthenticationService {
 //                .build();
     }
 
+
+    public String validateVerificationCode(String code) {
+
+        return "valid";
+    }
+
     public AuthenticationResponse getTokensAfterRegistrationVerification(User user){
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
@@ -137,4 +143,5 @@ public class AuthenticationService {
             }
         }
     }
+
 }

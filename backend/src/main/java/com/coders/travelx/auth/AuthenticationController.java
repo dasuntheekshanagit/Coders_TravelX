@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -29,7 +30,15 @@ public class AuthenticationController {
 
     ) {
 
-        User user = service.register(request);
+        User user;
+    try{
+        user = service.register(request);
+    }
+    catch (IllegalArgumentException e){
+        return "Email Already Exists";
+    }
+
+
         publisher.publishEvent(new RegistrationCompleteEvent(user,applicationUrl(webRequest)));
         return "Email Sent";
     }

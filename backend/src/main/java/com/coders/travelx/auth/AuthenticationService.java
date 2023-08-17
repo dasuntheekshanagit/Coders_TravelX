@@ -32,6 +32,10 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public User register(RegisterRequest request) {
+
+        if (repository.existsByEmail(request.getEmail())){
+            throw new IllegalArgumentException();
+        }
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())

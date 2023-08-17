@@ -2,6 +2,8 @@ package com.coders.travelx.auth;
 
 import com.coders.travelx.event.RegistrationCompleteEvent;
 import com.coders.travelx.model.User;
+import com.coders.travelx.model.VerificationCode;
+import com.coders.travelx.service.MailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ public class AuthenticationController {
 
     private final AuthenticationService service;
     private final ApplicationEventPublisher publisher;
+
+    private final MailService mailService;
 
     @PostMapping("/register")
     public String register(
@@ -55,6 +59,27 @@ public class AuthenticationController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid User");
     }
+
+    @GetMapping("/resendVerifyCode")
+    public ResponseEntity<String> resendVerificationCode(@RequestParam("code") String oldCode,
+                                                         HttpServletRequest request) {
+        VerificationCode verificationCode = service.generateNewVerificationCode(oldCode);
+        User user = verificationCode.getUser();
+        resendVerificationCodeMail(user, applicationUrl(request), verificationCode); // Call the mail sending method
+        return ResponseEntity.ok("Verification Code Resent");
+    }
+
+    private void resendVerificationCodeMail(User user, String applicationUrl, VerificationCode verificationCode) {
+        String url = applicationUrl + "/api/v1/auth/verifyRegistration?code=" +
+                verificationCode.getCode();
+
+        // Call your mail sending method here
+        mailService.sendVerifyEmail(user, url);
+
+//        log.info("Click the link to verify your account: {}", url);
+    }
+
+
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request

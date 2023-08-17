@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -179,4 +180,12 @@ public class AuthenticationService {
         VerificationCode verificationCode = new VerificationCode(user,code);
         verificationCodeRepository.save(verificationCode);
     }
+
+    public VerificationCode generateNewVerificationCode(String oldCode) {
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(oldCode);
+        verificationCode.setCode(UUID.randomUUID().toString());
+        verificationCodeRepository.save(verificationCode);
+        return verificationCode;
+    }
+
 }

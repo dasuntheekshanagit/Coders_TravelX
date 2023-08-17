@@ -16,6 +16,20 @@ spring:
         format_sql: true
     database: mysql
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bidcircleauction@gmail.com
+    password: kgmmrvmbtzvndobh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+
 application:
   security:
     jwt:

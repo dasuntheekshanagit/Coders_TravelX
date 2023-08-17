@@ -1,8 +1,11 @@
 package com.coders.travelx.auth;
 
+import com.coders.travelx.event.RegistrationCompleteEvent;
+import com.coders.travelx.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,12 +20,18 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService service;
+    private final ApplicationEventPublisher publisher;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+    public String register(
+            @RequestBody RegisterRequest request,
+            final HttpServletRequest webRequest
+
     ) {
-        return ResponseEntity.ok(service.register(request));
+
+        User user = service.register(request);
+        publisher.publishEvent(new RegistrationCompleteEvent(user,applicationUrl(webRequest)));
+        return "Email Sent";
     }
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
@@ -37,6 +46,14 @@ public class AuthenticationController {
             HttpServletResponse response
     ) throws IOException {
         service.refreshToken(request, response);
+    }
+
+    private String applicationUrl(HttpServletRequest request) {
+        return "http://" +
+                request.getServerName() +
+                ":" +
+                request.getServerPort() +
+                request.getContextPath();
     }
 
 

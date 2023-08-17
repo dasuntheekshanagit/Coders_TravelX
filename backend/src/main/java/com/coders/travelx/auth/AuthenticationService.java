@@ -4,8 +4,11 @@ package com.coders.travelx.auth;
 import com.coders.travelx.config.JwtService;
 import com.coders.travelx.model.Token;
 import com.coders.travelx.model.User;
+import com.coders.travelx.model.VerificationCode;
 import com.coders.travelx.repository.TokenRepository;
 import com.coders.travelx.repository.UserRepository;
+import com.coders.travelx.repository.VerificationCodeRepository;
+import com.coders.travelx.util.Role;
 import com.coders.travelx.util.TokenType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +24,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +34,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final VerificationCodeRepository verificationCodeRepository;
+
+
 
     public User register(RegisterRequest request) {
 
@@ -41,7 +48,8 @@ public class AuthenticationService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.USER)
+                .enabled(false)
                 .build();
         var savedUser = repository.save(user);
 
@@ -58,10 +66,26 @@ public class AuthenticationService {
 
 
     public String validateVerificationCode(String code) {
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(code);
 
+        if(verificationCode == null ){
+            return "invalid";
 
+        }
+        User user = verificationCode.getUser();
+        Calendar cal = Calendar.getInstance();
 
+        if ((verificationCode.getExpirationTime().getTime()
+                - cal.getTime().getTime()) <= 0) {
+            verificationCodeRepository.delete(verificationCode);
+            return "expired";
+        }
+
+        user.setEnabled(true);
+        repository.save(user);
         return "valid";
+
+
     }
 
     public AuthenticationResponse getTokensAfterRegistrationVerification(User user){

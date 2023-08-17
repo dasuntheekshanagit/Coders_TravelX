@@ -37,7 +37,7 @@ public class AuthenticationController {
 
 
         publisher.publishEvent(new RegistrationCompleteEvent(user,applicationUrl(webRequest)));
-        return "Email Sent";
+        return "Registration Successfull - Verification Email Sent";
     }
 
     @GetMapping("/verifyRegistration")

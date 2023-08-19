@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/Coders_TravelX/static/css/main.ad0e3b7d.css",
+    "main.js": "/Coders_TravelX/static/js/main.f2221bf6.js",
+    "static/media/welcome@3x.png": "/Coders_TravelX/static/media/welcome@3x.4187f734f0373bfced3b.png",
+    "static/media/image@3x.png": "/Coders_TravelX/static/media/image@3x.26c944cdb47f48fb5a28.png",
+    "static/media/rectangle-41@3x.png": "/Coders_TravelX/static/media/rectangle-41@3x.17d58c5c24e1eb0beb8b.png",
+    "index.html": "/Coders_TravelX/index.html",
+    "main.ad0e3b7d.css.map": "/Coders_TravelX/static/css/main.ad0e3b7d.css.map",
+    "main.f2221bf6.js.map": "/Coders_TravelX/static/js/main.f2221bf6.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ad0e3b7d.css",
+    "static/js/main.f2221bf6.js"
+  ]
+}
